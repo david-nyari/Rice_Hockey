@@ -36,7 +36,7 @@
 
 			<a href='https://docs.google.com/forms/d/e/1FAIpQLSfudHHxrsv2fHstgvaXAiCNxtOvkWhdmcP-WS6AM724A1sbew/viewform' target="_blank">
 			<div class="menu-btn-select">
-				<span>Get Involved</span>
+				<span>Player Interest</span>
 			</div>
 			</a>
 			<div class="menu-con-divider">
@@ -87,7 +87,7 @@
 				<div class='mobile-menu-btn-icon'>
 				</div>
 				<div class='mobile-menu-btn-select'>
-					<span>Get Involved</span>
+					<span>Player Interest</span>
 				</div>
 				</a>
 				<a href='/sponsors.php'>
