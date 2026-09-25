@@ -1,0 +1,516 @@
+@charset "utf-8";
+
+/* ==========================================================================
+   Live broadcast + scorekeeper console.
+
+   Chart series colours are exposed as custom properties so live.js can read
+   them with getComputedStyle rather than hard-coding hex in two places.
+   Slots 1 and 2 of a validated categorical palette: blue reads as Rice, orange
+   as the opponent. Rice's brand navy (#012b8f) is deliberately NOT used for the
+   mark -- at L 0.345 it is too dark to sit beside another series on a light
+   surface. It stays as heading/ink colour where it belongs.
+   ========================================================================== */
+
+:root {
+	--live-surface:   #fcfcfb;
+	--live-ink:       #0b0b0b;
+	--live-ink-2:     #52514e;
+	--live-grid:      rgba(0, 0, 0, .08);
+	--live-rice:      #2a78d6;
+	--live-opp:       #eb6834;
+	--live-navy:      #012b8f;
+	--live-line:      rgba(0, 0, 0, .10);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--live-surface: #1a1a19;
+		--live-ink:     #ffffff;
+		--live-ink-2:   #c3c2b7;
+		--live-grid:    rgba(255, 255, 255, .12);
+		--live-rice:    #3987e5;
+		--live-opp:     #d95926;
+		--live-line:    rgba(255, 255, 255, .14);
+	}
+}
+
+/* ---------------------------------------------------------- public page -- */
+
+.live-board {
+	max-width: 720px;
+	margin: 40px auto 0 auto;
+	padding: 24px 20px 28px 20px;
+	border: 1px solid var(--live-line);
+	border-radius: 16px;
+	background: var(--live-surface);
+	text-align: center;
+}
+
+.live-state {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
+	font-family: Roboto-Regular, system-ui, sans-serif;
+	font-size: 14px;
+	color: var(--live-ink-2);
+	min-height: 24px;
+}
+
+.live-pill {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	background: var(--live-line);
+	color: var(--live-ink-2);
+}
+
+.live-pill.is-live {
+	background: #c0392b;
+	color: #fff;
+}
+
+.live-pill.is-final {
+	background: var(--live-navy);
+	color: #fff;
+}
+
+.live-clock {
+	font-variant-numeric: tabular-nums;
+}
+
+.live-score {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	margin-top: 16px;
+}
+
+.live-side {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	min-width: 120px;
+}
+
+.live-logo {
+	width: 52px;
+	height: 52px;
+	object-fit: contain;
+	display: block;
+}
+
+.live-name {
+	font-family: Roboto-Regular, system-ui, sans-serif;
+	font-size: 14px;
+	color: var(--live-ink-2);
+	max-width: 160px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.live-num {
+	font-family: Roboto-Bold, system-ui, sans-serif;
+	font-size: 64px;
+	line-height: 1;
+	color: var(--live-ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.live-dash {
+	font-size: 40px;
+	color: var(--live-ink-2);
+}
+
+.live-empty,
+.live-stale {
+	margin: 14px 0 0 0;
+	font-family: Roboto-Regular, system-ui, sans-serif;
+	font-size: 14px;
+	color: var(--live-ink-2);
+}
+
+.live-stale {
+	color: #c0392b;
+}
+
+.live-section {
+	margin-top: 48px;
+}
+
+/* 16:9 without the padding-top hack */
+.live-video {
+	position: relative;
+	max-width: 960px;
+	margin: 0 auto;
+	aspect-ratio: 16 / 9;
+	background: #000;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.live-video iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.live-chart-wrap {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 16px;
+	border: 1px solid var(--live-line);
+	border-radius: 12px;
+	background: var(--live-surface);
+}
+
+/* Table view: identity is never colour-alone, and the goal log is genuinely
+   useful on its own. */
+.live-log {
+	max-width: 960px;
+	margin: 20px auto 0 auto;
+	border-collapse: collapse;
+	width: 100%;
+	font-family: Roboto-Regular, system-ui, sans-serif;
+	font-size: 14px;
+	color: var(--live-ink);
+}
+
+.live-log caption {
+	text-align: left;
+	padding: 0 0 8px 2px;
+	font-size: 13px;
+	color: var(--live-ink-2);
+}
+
+.live-log th,
+.live-log td {
+	text-align: left;
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--live-line);
+}
+
+.live-log th {
+	font-weight: 400;
+	color: var(--live-ink-2);
+	font-size: 13px;
+}
+
+.live-log td:last-child {
+	font-variant-numeric: tabular-nums;
+}
+
+.live-swatch {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 2px;
+	margin-right: 8px;
+	vertical-align: baseline;
+}
+
+.live-swatch-rice { background: var(--live-rice); }
+.live-swatch-opp  { background: var(--live-opp); }
+
+@media screen and (max-width: 800px) {
+	.live-board  { margin: 24px 16px 0 16px; padding: 20px 14px 22px 14px; }
+	.live-num    { font-size: 48px; }
+	.live-score  { gap: 10px; }
+	.live-side   { min-width: 92px; }
+	.live-logo   { width: 40px; height: 40px; }
+	.live-section { margin-top: 32px; }
+	.live-chart-wrap { margin: 0 16px; padding: 10px; }
+	.live-log    { width: calc(100% - 32px); margin: 16px 16px 0 16px; }
+}
+
+/* ------------------------------------------------------ admin / console -- */
+
+.admin-body {
+	margin: 0;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	background: #f4f4f6;
+	color: #111;
+	font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+	-webkit-text-size-adjust: 100%;
+	padding: env(safe-area-inset-top) env(safe-area-inset-right)
+	         env(safe-area-inset-bottom) env(safe-area-inset-left);
+	box-sizing: border-box;
+}
+
+.admin-login {
+	margin: auto;
+	width: min(360px, calc(100% - 40px));
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.admin-login h1 {
+	margin: 0 0 8px 0;
+	font-size: 22px;
+}
+
+.admin-login input,
+.admin-setup input {
+	font-size: 16px; /* 16px or iOS zooms the page on focus */
+	padding: 14px 12px;
+	border: 1px solid #c9c9d1;
+	border-radius: 10px;
+	background: #fff;
+	color: #111;
+}
+
+.admin-login button,
+.admin-setup button {
+	font-size: 16px;
+	padding: 14px;
+	border: 0;
+	border-radius: 10px;
+	background: var(--live-navy);
+	color: #fff;
+	cursor: pointer;
+}
+
+.admin-status {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	font-size: 13px;
+	color: #4a4a55;
+	border-bottom: 1px solid #e2e2e8;
+	background: #fff;
+}
+
+.admin-pill {
+	padding: 3px 9px;
+	border-radius: 999px;
+	font-size: 11px;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	background: #e2e2e8;
+}
+
+.admin-pill-live      { background: #c0392b; color: #fff; }
+.admin-pill-final     { background: var(--live-navy); color: #fff; }
+.admin-clock          { font-variant-numeric: tabular-nums; }
+.admin-signout        { margin-left: auto; color: #4a4a55; }
+
+.admin-error,
+.admin-notice {
+	margin: 10px 14px 0 14px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	font-size: 14px;
+}
+
+.admin-error  { background: #fde8e6; color: #8c1d13; }
+.admin-notice { background: #e6f4ea; color: #10632a; }
+
+.admin-scoreline {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	padding: 18px 10px 6px 10px;
+	text-align: center;
+}
+
+.admin-scoreline > div {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	flex: 1;
+}
+
+.admin-team {
+	font-size: 13px;
+	color: #4a4a55;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0 6px;
+}
+
+.admin-num {
+	font-size: 56px;
+	font-weight: 700;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+/* The pad is pushed to the bottom of the viewport: at a rink this is operated
+   one-handed, and the two scoring buttons need to be under the thumb. */
+.admin-pad {
+	margin-top: auto;
+	padding: 10px 10px 14px 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.admin-pad-secondary {
+	display: flex;
+	gap: 10px;
+}
+
+.admin-pad-secondary button {
+	flex: 1;
+	min-height: 64px;
+	font-size: 17px;
+	border: 1px solid #c9c9d1;
+	border-radius: 14px;
+	background: #fff;
+	color: #111;
+	cursor: pointer;
+}
+
+.admin-pad-primary {
+	display: flex;
+	gap: 10px;
+}
+
+.btn-score {
+	flex: 1;
+	min-height: 168px;
+	border: 0;
+	border-radius: 18px;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	padding: 10px;
+	min-width: 0;
+}
+
+.btn-score:disabled {
+	opacity: .38;
+}
+
+.btn-score:active:not(:disabled) {
+	transform: scale(.97);
+}
+
+.btn-plus {
+	font-size: 44px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.btn-label {
+	font-size: 15px;
+	opacity: .92;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.btn-rice { background: var(--live-rice); }
+.btn-opp  { background: var(--live-opp); }
+
+.btn-danger {
+	background: #c0392b !important;
+}
+
+.admin-setup {
+	padding: 0 14px 16px 14px;
+}
+
+.admin-setup summary {
+	padding: 10px 0;
+	cursor: pointer;
+	font-size: 15px;
+	color: #4a4a55;
+}
+
+.admin-setup form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+
+.admin-setup label {
+	font-size: 13px;
+	color: #4a4a55;
+}
+
+.admin-hint {
+	font-size: 13px;
+	color: #4a4a55;
+}
+
+.admin-standalone {
+	margin: auto;
+	max-width: 420px;
+	text-align: center;
+}
+
+/* The console is a tool, not a page -- it should not restyle itself at night
+   just because the phone is in dark mode. Colours here stay fixed for
+   legibility under rink lighting. */
+
+/* Empty state: shown when no game object exists at all. */
+.live-none {
+	padding: 18px 8px 6px 8px;
+}
+
+.live-none-title {
+	margin: 0;
+	font-family: Roboto-Bold, system-ui, sans-serif;
+	font-size: 22px;
+	color: var(--live-ink);
+}
+
+.live-none-sub {
+	margin: 8px 0 0 0;
+	font-family: Roboto-Regular, system-ui, sans-serif;
+	font-size: 15px;
+	color: var(--live-ink-2);
+}
+
+.live-none-sub a {
+	color: var(--live-rice);
+	text-decoration: underline;
+}
+
+/* The hidden attribute is display:none in the UA stylesheet, which ANY author
+   `display:` declaration outranks. .live-score sets display:flex and .live-logo
+   sets display:block, so both rendered while carrying [hidden]. Make the
+   attribute win for everything on this page that toggles visibility. */
+.live-board [hidden],
+.live-section[hidden] {
+	display: none !important;
+}
+
+/* Pin the attribution to the bottom of the viewport on this page. With no game
+   on, the live page is a single short card, and the footer would otherwise sit
+   stranded in the middle of the screen. Scoped to .live-page so the other
+   pages keep the layout they already have. */
+body.live-page .page-con-content {
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+}
+
+body.live-page .page-con-container {
+	flex: 1 0 auto;
+}
+
+body.live-page .site-attribution {
+	flex-shrink: 0;
+}

@@ -62,17 +62,17 @@
 			<div class='sponsors-grid-container'>
 				<div class='sponsors-logo-wrapper'>
 					<a href="https://bentarrow.net/" target="_blank" title="Bent Arrow Consulting LLC">
-						<img src="/img/graphics/sponsor_logos/sponsor1.png" alt="Sponsor 1" class="sponsors-logo">
+						<img src="/img/graphics/sponsor_logos/sponsor1.webp" alt="Sponsor 1" class="sponsors-logo">
 					</a>
 				</div>
 				<div class='sponsors-logo-wrapper'>
 					<a href="https://www.kraftworks.app/" target="_blank" title="Kraftworks">
-						<img src="/img/graphics/sponsor_logos/sponsor2.png" alt="Sponsor 2" class="sponsors-logo">
+						<img src="/img/graphics/sponsor_logos/sponsor2.webp" alt="Sponsor 2" class="sponsors-logo">
 					</a>
 				</div>
 				<div class='sponsors-logo-wrapper'>
 					<a href="https://www.hockeydayinhouston.com/" target="_blank" title="Hockey Day in Houston">
-						<img src="/img/graphics/sponsor_logos/sponsor3.png" alt="Sponsor 3" class="sponsors-logo">
+						<img src="/img/graphics/sponsor_logos/sponsor3.webp" alt="Sponsor 3" class="sponsors-logo">
 					</a>
 				</div>
 				

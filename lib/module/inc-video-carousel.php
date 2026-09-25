@@ -6,7 +6,7 @@
 				<div class="fill">
 					<div class="video-con-container">
 						<div class='video-con-wrapper'>
-							<img class='video-img-thumbnail' src="/img/videos/1.jpg" alt="Highlight 1">
+							<img class='video-img-thumbnail' decoding="async" src="/img/videos/1.webp" alt="Highlight 1">
 						</div>
 					</div>
 				</div>
@@ -16,7 +16,7 @@
 				<div class="fill">
 					<div class="video-con-container">
 						<div class='video-con-wrapper'>
-							<img class='video-img-thumbnail' src="/img/videos/2.jpg" alt="Highlight 2">
+							<img class='video-img-thumbnail' loading="lazy" decoding="async" src="/img/videos/2.webp" alt="Highlight 2">
 						</div>
 					</div>
 				</div>
@@ -26,7 +26,7 @@
 				<div class="fill">
 					<div class="video-con-container">
 						<div class='video-con-wrapper'>
-							<img class='video-img-thumbnail' src="/img/videos/3.jpg" alt="Highlight 3">
+							<img class='video-img-thumbnail' loading="lazy" decoding="async" src="/img/videos/3.webp" alt="Highlight 3">
 						</div>
 					</div>
 				</div>
@@ -35,7 +35,7 @@
 				<div class="fill">
 					<div class="video-con-container">
 						<div class='video-con-wrapper'>
-							<img class='video-img-thumbnail' src="/img/videos/4.jpg" alt="Highlight 3">
+							<img class='video-img-thumbnail' loading="lazy" decoding="async" src="/img/videos/4.webp" alt="Highlight 3">
 						</div>
 					</div>
 				</div>
@@ -44,7 +44,7 @@
 				<div class="fill">
 					<div class="video-con-container">
 						<div class='video-con-wrapper'>
-							<img class='video-img-thumbnail' src="/img/videos/5.jpg" alt="Highlight 3">
+							<img class='video-img-thumbnail' loading="lazy" decoding="async" src="/img/videos/5.webp" alt="Highlight 3">
 						</div>
 					</div>
 				</div>
@@ -53,7 +53,7 @@
 				<div class="fill">
 					<div class="video-con-container">
 						<div class='video-con-wrapper'>
-							<img class='video-img-thumbnail' src="/img/videos/6.jpg" alt="Highlight 3">
+							<img class='video-img-thumbnail' loading="lazy" decoding="async" src="/img/videos/6.webp" alt="Highlight 3">
 						</div>
 					</div>
 				</div>

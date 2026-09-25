@@ -1,4 +1,5 @@
-<link rel="stylesheet" type="text/css" href="/lib/css/anim.css?v1"/>
-<link rel="stylesheet" type="text/css" href="/lib/css/main.css?v1"/>
-<link rel="stylesheet" type="text/css" href="/lib/css/debug.css?v1"/>
-<link rel="stylesheet" type="text/css" href="/lib/css/scale.css?v1"/>
+<?php require_once __DIR__ . '/sys-asset.php'; ?>
+<link rel="stylesheet" type="text/css" href="<?= asset_v('/lib/css/anim.css') ?>"/>
+<link rel="stylesheet" type="text/css" href="<?= asset_v('/lib/css/main.css') ?>"/>
+<link rel="stylesheet" type="text/css" href="<?= asset_v('/lib/css/debug.css') ?>"/>
+<link rel="stylesheet" type="text/css" href="<?= asset_v('/lib/css/scale.css') ?>"/>

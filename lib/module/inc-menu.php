@@ -26,6 +26,14 @@
 			<div class="menu-con-divider">
 			</div>
 
+			<a href='/live.php'>
+			<div class="menu-btn-select">
+				<span>Watch Live</span>
+			</div>
+			</a>
+			<div class="menu-con-divider">
+			</div>
+
 			<a href='/tickets.php'>
 			<div class="menu-btn-select">
 				<span>Tickets</span>
@@ -74,6 +82,13 @@
 				</div>
 				<div class='mobile-menu-btn-select'>
 					<span>Instagram</span>
+				</div>
+				</a>
+				<a href="/live.php">
+				<div class='mobile-menu-btn-icon'>
+				</div>
+				<div class='mobile-menu-btn-select'>
+					<span>Watch Live</span>
 				</div>
 				</a>
 				<a href="/tickets.php">

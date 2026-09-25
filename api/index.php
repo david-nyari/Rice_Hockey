@@ -15,17 +15,14 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Rice Hockey Club" />
 
+<link rel="preload" as="image" href="/img/graphics/landing/hero-main.webp" fetchpriority="high"/>
 <?php include __DIR__ . '/../lib/module/sys-css.php';?>
 <?php include __DIR__ . '/../lib/module/sys-js.php';?>
-<script data-cfasync="false" src='/lib/js/carousel.js?v=1'></script>
+<script data-cfasync="false" src='<?= asset_v("/lib/js/carousel.js") ?>'></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6161192934701994" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<img src="/img/graphics/landing/hero-main.png" width="1" height="1" alt="Preload"/>
-<img src="/img/videos/1.jpg" width="1" height="1" alt="Preload of highlight 1"/>
-<img src="/img/videos/2.jpg" width="1" height="1" alt="Preload of highlight 2"/>
-<img src="/img/videos/3.jpg" width="1" height="1" alt="Preload of highlight 3"/>
 <?php include __DIR__ . '/../lib/module/sys-php.php';?>
 
 <div class="page-con-content landing-con-override">
@@ -49,12 +46,12 @@
 				<div class='landing-con-left content-expand '>
 					<div class="landing-con-container scale-content-txt-1 fade-in-onload">
 						<div class='landing-tx1-heading'>
-						<img src="/img/icons/menu/logo-wide-light.png" alt="Rice Hockey Club" class ="landing-logo-img">
+						<img src="/img/icons/menu/logo-wide-light.webp" alt="Rice Hockey Club" class ="landing-logo-img">
 						</div>
 					</div>
 				</div>
 				<div class='landing-con-right content-remove '>
-					<div class='landing-img-hero' style="background: url(/img/graphics/landing/hero-main.png) no-repeat center; background-size: contain;">
+					<div class='landing-img-hero' style="background: url(/img/graphics/landing/hero-main.webp) no-repeat center; background-size: contain;">
 					</div>
 				</div>
 			</div>

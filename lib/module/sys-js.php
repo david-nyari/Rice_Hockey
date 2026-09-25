@@ -1,8 +1,9 @@
-<script data-cfasync="false" src='/lib/js/jquery.js?v1'></script>
-<script data-cfasync="false" src='/lib/js/main.js?v1'></script>
-<script data-cfasync="false" src='/lib/js/jscookie.js?v1'></script>
-<script data-cfasync="false" src='/lib/js/particles.js?v1'></script>
-<script data-cfasync="false" src='/lib/js/particles-sel.js?v1'></script>
+<?php require_once __DIR__ . '/sys-asset.php'; ?>
+<script data-cfasync="false" src='<?= asset_v('/lib/js/jquery.js') ?>'></script>
+<script data-cfasync="false" src='<?= asset_v('/lib/js/main.js') ?>'></script>
+<script data-cfasync="false" src='<?= asset_v('/lib/js/jscookie.js') ?>'></script>
+<script data-cfasync="false" src='<?= asset_v('/lib/js/particles.js') ?>'></script>
+<script data-cfasync="false" src='<?= asset_v('/lib/js/particles-sel.js') ?>'></script>
 <noscript>
 <style>
 /*

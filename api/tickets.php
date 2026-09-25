@@ -131,9 +131,9 @@
 							<td class='tickets-col-location'>Bellerive Ice Rink</td>
 							<td class='past-col-result'>
 								<div class='result-wrap'>
-									<img class='team-logo' src='/img/uni_logos/rice_logo.png' alt='Yale' />
+									<img class='team-logo' src='/img/uni_logos/rice_logo.webp' alt='Yale' />
 									<span class='result-score'>6 - 2</span>
-									<img class='team-logo' src='/img/uni_logos/uh_logo.png' alt='Rice' />
+									<img class='team-logo' src='/img/uni_logos/uh_logo.webp' alt='Rice' />
 									
 								</div>
 							</td>
