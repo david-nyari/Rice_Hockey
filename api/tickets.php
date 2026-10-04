@@ -109,7 +109,7 @@
 								<div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px;">
 									<img class='team-logo' src='/img/uni_logos/rice_logo.webp' alt='Rice' style='width: 24px; height: auto;' />
 									<span>Rice vs UH</span>
-									<img class='team-logo' src='/img/uni_logos/uH_logo.webp' alt='ETBU' style='width: 24px; height: auto;' />
+									<img class='team-logo' src='/img/uni_logos/uh_logo.webp' alt='ETBU' style='width: 24px; height: auto;' />
 								</div>
 							</td>
 							<td class='tickets-col-location'>
