@@ -590,44 +590,22 @@
 }
 
 /* Responsive tables for tickets and past games */
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 900px) {
 	.tickets-table-container,
 	.past-games-table-container {
+		padding: 24px;
 		margin-top: 14px;
 		margin-bottom: 20px;
-		overflow-x: auto;
-	}
-	.tickets-table,
-	.past-games-table {
-		font-size: 14px;
-		width: 100%;
 	}
 	.tickets-table thead th,
 	.past-games-table thead th {
-		padding: 10px 8px;
+		padding: 12px 10px;
 		font-size: 13px;
 	}
 	.tickets-table tbody td,
 	.past-games-table tbody td {
-		padding: 10px 8px;
-		font-size: 13px;
-	}
-	.tickets-col-date,
-	.past-col-date {
-		min-width: 90px;
-	}
-	.tickets-col-game,
-	.past-col-game {
-		min-width: 110px;
-	}
-	.tickets-col-price,
-	.tickets-col-location,
-	.past-col-location {
-		min-width: 100px;
-	}
-	.tickets-col-chevron {
-		width: 30px;
-		padding: 10px 4px;
+		padding: 12px 10px;
+		font-size: 14px;
 	}
 	.content-btn-right {
 		background-size: 16px !important;
@@ -635,69 +613,141 @@
 	.content-btn-left {
 		background-size: 16px !important;
 	}
-	.past-col-result {
-		width: auto;
-		min-width: 140px;
+	.tickets-table .team-logo {
+		height: auto;
 	}
 	.result-wrap {
 		gap: 4px;
 	}
-	.team-logo {
-		width: 24px;
-		height: 24px;
-	}
-	.result-score {
-		font-size: 13px;
-	}
 }
 
-@media screen and (max-width: 480px) {
+/* Four columns stop fitting on a phone, so each row becomes its own card */
+@media screen and (max-width: 700px) {
 	.tickets-table-container,
 	.past-games-table-container {
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
+		padding: 0;
+		background: transparent;
+		overflow-x: visible;
 	}
 	.tickets-table,
 	.past-games-table {
-		font-size: 12px;
-		min-width: 500px;
+		display: block;
+		width: 100%;
+		background: transparent;
 	}
-	.tickets-table thead th,
-	.past-games-table thead th {
-		padding: 8px 6px;
-		font-size: 11px;
+	.tickets-table thead,
+	.past-games-table thead {
+		display: none;
+	}
+	.tickets-table tbody,
+	.past-games-table tbody {
+		display: block;
+	}
+	.tickets-table tr.tickets-row {
+		display: block;
+		padding: 16px;
+		margin-bottom: 12px;
+		background: #fff;
+		border: 1px solid #e6e6ec;
+		border-left: 4px solid #3440c9;
+		border-radius: 10px;
+		box-shadow: rgba(0,0,0,.06) 0 2px 8px 0;
+	}
+	.tickets-table tr.tickets-row:last-child {
+		margin-bottom: 0;
+	}
+	/* A tap leaves :hover stuck on touch devices, so keep the card steady */
+	.tickets-table tr.tickets-row:hover {
+		background: #fff;
+		box-shadow: rgba(0,0,0,.06) 0 2px 8px 0;
 	}
 	.tickets-table tbody td,
 	.past-games-table tbody td {
-		padding: 8px 6px;
+		display: block;
+		width: auto;
+		padding: 0;
+		border-bottom: none;
+	}
+	.tickets-table td.tickets-col-date {
+		margin-bottom: 6px;
+		font-family: Roboto-Bold;
 		font-size: 12px;
+		letter-spacing: .06em;
+		text-transform: uppercase;
+		color: #3440c9;
 	}
-	.tickets-col-date,
-	.past-col-date {
-		min-width: 80px;
+	.tickets-table td.tickets-col-game {
+		font-family: Roboto-Bold;
+		font-size: 17px;
+		color: #1a1a1a;
 	}
-	.tickets-col-game,
-	.past-col-game {
-		min-width: 100px;
+	.tickets-table .tickets-game-wrap {
+		gap: 10px;
 	}
-	.tickets-col-price,
-	.tickets-col-location,
-	.past-col-location {
-		min-width: 80px;
+	.tickets-table .tickets-game-wrap .team-logo {
+		width: 26px;
 	}
-	.past-col-result {
-		min-width: 120px;
+	.tickets-table td.tickets-col-location {
+		margin-top: 6px;
+		font-family: Roboto-Regular;
+		font-size: 14px;
+		font-weight: normal;
+		color: #666;
 	}
-	.result-wrap {
-		gap: 3px;
+	/* The chevron cell turns into a full-width call to action */
+	.tickets-table td.tickets-col-chevron {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		height: 44px;
+		margin-top: 14px;
+		border-radius: 8px;
+		background: linear-gradient(-70deg, #3440c9, #6894e0);
+		font-family: Roboto-Bold;
+		font-size: 14px;
+		letter-spacing: .04em;
+		text-transform: uppercase;
+		color: #fff;
 	}
-	.team-logo {
-		width: 20px;
-		height: 20px;
+	.tickets-table td.tickets-col-chevron::before {
+		content: "Buy Tickets";
 	}
-	.result-score {
-		font-size: 11px;
-		transform: translateX(-4px) !important;
+	/* The chevron image is blue and would disappear on the button, so draw one */
+	.tickets-table .tickets-col-chevron .content-btn-right,
+	.tickets-table .tickets-row:hover .tickets-col-chevron .content-btn-right {
+		width: 8px;
+		height: 8px;
+		margin: 0 0 0 -2px;
+		background: none !important;
+		border-top: 2px solid #fff;
+		border-right: 2px solid #fff;
+		transform: rotate(45deg);
+	}
+	.tickets-table td.tickets-col-chevron.tickets-col-tbd {
+		gap: 5px;
+		padding-right: 0;
+		background: #f1f1f5;
+		font-weight: bold;
+		color: #8a8a93;
+	}
+	.tickets-table td.tickets-col-tbd::before {
+		content: "Tickets";
+	}
+	/* Past games: the score line sits below the matchup */
+	.tickets-table td.past-col-result {
+		margin-top: 12px;
+		padding-top: 12px;
+		border-top: 1px solid #ececf0;
+	}
+	.tickets-table .result-wrap {
+		justify-content: center;
+		gap: 10px;
+	}
+	.tickets-table .result-score {
+		font-family: Roboto-Bold;
+		font-size: 16px;
+		color: #333;
 	}
 }
 

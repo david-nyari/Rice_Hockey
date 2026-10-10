@@ -4482,6 +4482,37 @@ a:hover {
     text-align: center
 }
 
+/* Matchup cell: logo / name / logo */
+.tickets-game-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px
+}
+
+.tickets-game-wrap .team-logo {
+    width: 24px;
+    height: auto
+}
+
+/* Logos whose source file carries a lot of built-in whitespace */
+.tickets-game-wrap .team-logo-inset {
+    transform: scale(1.75)
+}
+
+.tickets-table .tickets-location-link {
+    color: inherit;
+    text-decoration: underline
+}
+
+/* "TBD" stands in for the chevron until a ticket link exists */
+.tickets-table td.tickets-col-tbd {
+    text-align: center;
+    padding-right: 16px;
+    font-weight: 1000;
+    color: #888
+}
+
 .tickets-btn {
     padding: 8px 20px;
     background: linear-gradient(-70deg, #3440c9, #6894e0);
