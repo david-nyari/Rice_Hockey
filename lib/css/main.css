@@ -612,7 +612,7 @@ a:hover {
     line-height: 50px;
     position: relative;
     height: 50px;
-    padding-left: 20px;
+    padding-left: 48px;
     color: #fff;
     animation-name: fadeInDown;
     animation-duration: .5s;
@@ -671,15 +671,24 @@ a:hover {
     animation-iteration-count: 1
 }
 
+/* Pin the arrow to its row instead of floating it, so it lines up with the
+   button the same way in every browser */
+.mobile-menu-con-inner a {
+    display: block;
+    position: relative
+}
+
 .mobile-menu-btn-icon {
     width: 50px;
     height: 54px;
     background: url("/img/icons/arrows/left-h.webp") center center/18px no-repeat;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
     animation-name: fadeInDown;
     animation-duration: .5s;
-    animation-iteration-count: 1;
-    float: left
+    animation-iteration-count: 1
 }
 
 .mobile-menu-btn-spacer {

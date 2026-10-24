@@ -722,6 +722,11 @@
 		background: none !important;
 		border-top: 2px solid #fff;
 		border-right: 2px solid #fff;
+		/* Undo the carousel arrow's rounded, blurred mobile style, which
+		   turns this small box into a circle */
+		border-radius: 0;
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
 		transform: rotate(45deg);
 	}
 	.tickets-table td.tickets-col-chevron.tickets-col-tbd {
