@@ -236,7 +236,7 @@
 							</td>
 
 						</tr>
-						<tr class='tickets-row' onclick="window.location.href='#ticket-1';" style="cursor: pointer;">
+						<tr class='tickets-row'>
 							<td class='tickets-col-date'>January 23, 2026</td>
 							<td class='tickets-col-game'>Rice vs UH</td>
 							<td class='tickets-col-location'>Bellerive Ice Center</td>
