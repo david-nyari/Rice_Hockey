@@ -1,0 +1,160 @@
+@charset "utf-8";
+
+/* ==========================================================================
+   Stream overlay: a score bug for a 1920x1080 OBS Browser Source.
+
+   Sizes are in px for that canvas; OBS scales the whole source if the stream
+   is a different resolution. Each team's block is filled with its colour, the
+   same colours as the live page. The bar itself is neutral charcoal: Rice navy
+   would vanish against a navy bar, and a dark bar still stands off the ice.
+   ========================================================================== */
+
+@font-face {
+	font-family: Roboto-Bold;
+	src: url(/lib/font/Roboto-Bold.woff) format("woff");
+}
+
+:root {
+	--ov-bg:     rgba(18, 20, 26, .92);
+	--ov-cell:   rgba(0, 0, 0, .22);
+	--ov-ink:    #ffffff;
+	--ov-ink-2:  #c4c7cf;
+	--ov-rice:   #0c3468; /* rgb(12, 52, 104); same as --live-rice */
+	--ov-opp:    #eb6834;
+	--ov-pp:     #f5c518;
+}
+
+html,
+body {
+	margin: 0;
+	background: transparent;
+	overflow: hidden;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+.ov {
+	position: absolute;
+	top: 48px;
+	left: 48px;
+	font-family: Roboto-Bold, system-ui, sans-serif;
+	color: var(--ov-ink);
+	text-transform: uppercase;
+	letter-spacing: .02em;
+}
+
+.ov-bar {
+	display: flex;
+	align-items: stretch;
+	gap: 2px; /* a sliver of bar between the two team blocks */
+	height: 64px;
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--ov-bg);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+}
+
+.ov-team {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 0 0 0 12px;
+}
+
+.ov-rice {
+	background: var(--ov-rice);
+	color: #fff;
+}
+
+.ov-opp {
+	background: var(--ov-opp);
+	color: var(--ov-opp-ink, #fff);
+}
+
+/* On a white badge: Rice's own logo is navy and vanishes on the bar. */
+.ov-logo {
+	width: 44px;
+	height: 44px;
+	padding: 4px;
+	box-sizing: border-box;
+	border-radius: 50%;
+	background: #fff;
+	object-fit: contain;
+}
+
+.ov-name {
+	font-size: 26px;
+	max-width: 220px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ov-num {
+	align-self: stretch;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 64px;
+	padding: 0 8px;
+	font-size: 38px;
+	font-variant-numeric: tabular-nums;
+	background: var(--ov-cell);
+}
+
+.ov-time {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 0 22px;
+	font-size: 26px;
+	border-left: 1px solid rgba(255, 255, 255, .15);
+}
+
+.ov-period {
+	color: var(--ov-ink-2);
+}
+
+.ov-clock {
+	min-width: 88px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* Power play / 4 on 4, tucked under the bar. */
+.ov-strip,
+.ov-goal {
+	display: inline-flex;
+	align-items: center;
+	gap: 18px;
+	height: 40px;
+	margin-top: 6px;
+	padding: 0 18px;
+	border-radius: 8px;
+	font-size: 22px;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, .3);
+}
+
+.ov-strip {
+	background: var(--ov-pp);
+	color: #111;
+}
+
+.ov-strip-clock {
+	font-variant-numeric: tabular-nums;
+}
+
+.ov-goal {
+	font-size: 26px;
+	letter-spacing: .08em;
+	animation: ov-in .35s ease-out;
+}
+
+.ov-goal.is-rice { background: var(--ov-rice); }
+.ov-goal.is-opp  { background: var(--ov-opp); color: var(--ov-opp-ink, #fff); }
+
+@keyframes ov-in {
+	from { transform: translateY(-10px); opacity: 0; }
+	to   { transform: none; opacity: 1; }
+}

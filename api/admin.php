@@ -55,24 +55,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'setup') {
             $state['opponent']      = trim($_POST['opponent'] ?? '') ?: 'Opponent';
             $state['opponent_logo'] = trim($_POST['opponent_logo'] ?? '');
-            // Accept a full URL or a bare id; store the id either way.
+            // Accept a full URL or a bare id; store the id either way. YouTube
+            // shares a live stream as youtube.com/live/<id>.
             $yt = trim($_POST['youtube'] ?? '');
-            if (preg_match('~(?:v=|youtu\.be/|embed/)([A-Za-z0-9_-]{11})~', $yt, $m)) {
+            if (preg_match('~(?:v=|youtu\.be/|embed/|live/|shorts/)([A-Za-z0-9_-]{11})~', $yt, $m)) {
                 $yt = $m[1];
             }
             $state['youtube'] = preg_match('~^[A-Za-z0-9_-]{11}$~', $yt) ? $yt : '';
+            $state['opponent_color'] = live_hex_color($_POST['opponent_color'] ?? '');
             $ok = live_save($state);
             $notice = $ok ? 'Saved.' : 'Could not reach the store.';
+            if ($ok && $state['opponent_color'] !== '') {
+                // Saved anyway: it is their colour. Just say what to expect.
+                $error = live_color_warning($state['opponent_color']);
+            }
         } elseif ($action === 'reset') {
             $fresh                  = live_default_state();
             $fresh['opponent']      = $state['opponent'];
             $fresh['opponent_logo'] = $state['opponent_logo'];
+            $fresh['opponent_color'] = $state['opponent_color'];
             $fresh['youtube']       = $state['youtube'];
             live_save($fresh);
             header('Location: /admin.php');
             exit;
         } else {
-            $next = live_apply($state, $action);
+            $next = live_apply($state, $action, $_POST);
             if ($next === null) {
                 $error = 'That action is not available right now.';
             } elseif (!live_save($next)) {
@@ -89,8 +96,21 @@ $authed = live_is_admin();
 $state  = $authed ? (live_load() ?? live_default_state()) : null;
 $score  = $state ? live_score($state) : ['rice' => 0, 'opp' => 0];
 $csrf   = live_csrf_token();
+$now    = $state ? live_game_seconds($state) : 0;
+
+// Penalties still being served. Between periods the clock holds at the
+// buzzer, so these hold too, as they should.
+$active = [];
+if ($state && $state['status'] === 'live') {
+    foreach (live_penalties($state) as $p) {
+        if ($p['end_sec'] > $now) {
+            $active[] = $p;
+        }
+    }
+}
 
 function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
+function mmss($sec) { return sprintf('%d:%02d', intdiv($sec, 60), $sec % 60); }
 ?>
 <!doctype html>
 <html lang="en-US">
@@ -102,7 +122,9 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 <meta name="theme-color" content="#00297f">
 <link rel="stylesheet" href="<?= asset_v('/lib/css/live.css') ?>"/>
 </head>
-<body class="admin-body">
+<?php $oppColor = $state['opponent_color'] ?? ''; ?>
+<body class="admin-body"<?php if ($oppColor !== ''): ?>
+      style="--live-opp: <?= h($oppColor) ?>; --live-opp-ink: <?= live_ink_on($oppColor) ?>"<?php endif; ?>>
 
 <?php if (!$authed): ?>
 
@@ -129,8 +151,10 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 	<div class="admin-status">
 		<span class="admin-pill admin-pill-<?= h($state['status']) ?>"><?= h($state['status']) ?></span>
 		<span>Period <?= $state['period'] > 0 ? (int) $state['period'] : '-' ?></span>
-		<span class="admin-clock" data-clock="<?= live_game_seconds($state) ?>"
-		      data-running="<?= $state['status'] === 'live' ? '1' : '0' ?>"></span>
+		<span class="admin-clock" data-clock="<?= $now ?>"
+		      data-max="<?= (int) $state['period'] * LIVE_PERIOD_LENGTH ?>"
+		      data-live="<?= $state['status'] === 'live' ? '1' : '0' ?>"
+		      data-running="<?= live_clock_running($state) ? '1' : '0' ?>"></span>
 		<a class="admin-signout" href="/admin.php?logout=1">Sign out</a>
 	</div>
 
@@ -142,6 +166,30 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 		<div><span class="admin-team"><?= h($state['opponent']) ?></span><span class="admin-num" id="n-opp"><?= (int) $score['opp'] ?></span></div>
 	</div>
 
+	<!-- Running penalties. Replaced wholesale by live-admin.js after each tap,
+	     since a goal can release one. -->
+	<div id="pen-list"><?php if ($active): ?>
+		<ul class="admin-pens">
+			<?php foreach ($active as $p): ?>
+			<li data-end="<?= (int) $p['end_sec'] ?>">
+				<span class="live-swatch live-swatch-<?= $p['team'] === 'rice' ? 'rice' : 'opp' ?>"></span>
+				<span class="admin-pen-what">
+					<?= $p['team'] === 'rice' ? 'Rice' : h($state['opponent']) ?>
+					<?= $p['player'] !== '' ? '#' . h($p['player']) : '' ?>
+					&middot; <?= h($p['infraction']) ?>
+				</span>
+				<span class="admin-pen-left"><?= mmss($p['end_sec'] - $now) ?></span>
+				<form method="post" action="/admin.php" onsubmit="return confirm('End this penalty now?')">
+					<input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+					<input type="hidden" name="action" value="penalty_end">
+					<input type="hidden" name="seq" value="<?= (int) $p['seq'] ?>">
+					<button type="submit">End</button>
+				</form>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+	<?php endif; ?></div>
+
 	<!-- The two scoring buttons dominate and sit lowest: thumb territory. -->
 	<form class="admin-pad" method="post" action="/admin.php" id="pad">
 		<input type="hidden" name="csrf" value="<?= h($csrf) ?>">
@@ -152,6 +200,12 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 				<?= $state['period'] >= LIVE_PERIODS ? 'End game' : ($state['period'] === 0 ? 'Start game' : 'Next period') ?>
 			</button>
 		</div>
+		<?php $running = live_clock_running($state); ?>
+		<button type="submit" name="action" value="clock" id="btn-clock"
+		        class="btn-clock <?= $running ? 'is-running' : 'is-stopped' ?>"
+		        <?= $state['status'] === 'live' ? '' : 'disabled' ?>>
+			<?= $running ? 'Stop clock' : 'Start clock' ?>
+		</button>
 		<div class="admin-pad-primary">
 			<button type="submit" name="action" value="rice" class="btn-score btn-rice"
 			        <?= $state['status'] === 'live' ? '' : 'disabled' ?>>
@@ -165,6 +219,43 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 	</form>
 
 	<details class="admin-setup">
+		<summary>Add penalty</summary>
+		<?php if ($state['status'] === 'live'): ?>
+		<form method="post" action="/admin.php">
+			<input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+			<input type="hidden" name="action" value="penalty">
+			<fieldset class="admin-seg">
+				<legend>Team</legend>
+				<label><input type="radio" name="team" value="rice" required><span>Rice</span></label>
+				<label><input type="radio" name="team" value="opp"><span><?= h($state['opponent']) ?></span></label>
+			</fieldset>
+			<label for="pen-player">Player number</label>
+			<input id="pen-player" name="player" inputmode="numeric" pattern="\d{0,3}" maxlength="3"
+			       placeholder="Optional" autocomplete="off">
+			<label for="pen-inf">Infraction</label>
+			<select id="pen-inf" name="infraction" required>
+				<option value="" disabled selected>Choose&hellip;</option>
+				<?php foreach (LIVE_INFRACTIONS as $inf): ?>
+				<option value="<?= h($inf) ?>"><?= h($inf) ?></option>
+				<?php endforeach; ?>
+			</select>
+			<label for="pen-min">Length</label>
+			<select id="pen-min" name="minutes">
+				<?php foreach (LIVE_PENALTY_MINUTES as $min => $label): ?>
+				<option value="<?= $min ?>"><?= $min ?> min &middot; <?= h($label) ?></option>
+				<?php endforeach; ?>
+			</select>
+			<button type="submit">Add penalty</button>
+		</form>
+		<p class="admin-hint">Starts at the current game clock. A minor ends on its own
+		   when the other team scores on the power play. Undo removes the last goal
+		   or penalty.</p>
+		<?php else: ?>
+		<p class="admin-hint">Penalties can be added once the game has started.</p>
+		<?php endif; ?>
+	</details>
+
+	<details class="admin-setup">
 		<summary>Game setup</summary>
 		<form method="post" action="/admin.php">
 			<input type="hidden" name="csrf" value="<?= h($csrf) ?>">
@@ -174,8 +265,12 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 			<label for="logo">Opponent logo path</label>
 			<input id="logo" name="opponent_logo" value="<?= h($state['opponent_logo']) ?>"
 			       placeholder="/img/uni_logos/uh_logo.webp">
-			<label for="yt">YouTube link or id</label>
-			<input id="yt" name="youtube" value="<?= h($state['youtube']) ?>" placeholder="dQw4w9WgXcQ">
+			<label for="opp-color">Opponent colour</label>
+			<input id="opp-color" name="opponent_color" type="color" class="admin-color"
+			       value="<?= h($oppColor !== '' ? $oppColor : '#eb6834') ?>">
+			<label for="yt">YouTube live stream link</label>
+			<input id="yt" name="youtube" value="<?= h($state['youtube']) ?>"
+			       placeholder="https://youtube.com/live/...">
 			<button type="submit">Save</button>
 		</form>
 		<form method="post" action="/admin.php" onsubmit="return confirm('Reset the score and clear all events?')">
@@ -183,7 +278,9 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 			<input type="hidden" name="action" value="reset">
 			<button type="submit" class="btn-danger">Reset game</button>
 		</form>
-		<p class="admin-hint">Public page: <a href="/live.php">/live.php</a></p>
+		<p class="admin-hint">Public page: <a href="/live.php">/live.php</a><br>
+		   Stream overlay for OBS: <a href="/overlay.php">/overlay.php</a>
+		   (Browser Source, 1920&times;1080)</p>
 	</details>
 
 	<script src="<?= asset_v('/lib/js/live-admin.js') ?>"></script>

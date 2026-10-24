@@ -72,6 +72,7 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 					<span class="live-pill" id="live-pill">&nbsp;</span>
 					<span class="live-period" id="live-period"></span>
 					<span class="live-clock" id="live-clock"></span>
+					<span class="live-pp" id="live-pp" hidden></span>
 				</div>
 				<div class="live-score" id="live-score">
 					<div class="live-side">
@@ -85,6 +86,10 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 						<span class="live-name" id="live-opp-name">Opponent</span>
 						<span class="live-num" id="live-opp">0</span>
 					</div>
+				</div>
+				<div class="live-pens" id="live-pens" aria-label="Penalties being served" hidden>
+					<ul id="live-pen-rice"></ul>
+					<ul id="live-pen-opp"></ul>
 				</div>
 				<div class="live-none" id="live-empty" hidden>
 					<p class="live-none-title">No game is on right now</p>
@@ -108,6 +113,7 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 					</div>
 				</div>
 				<div class="live-video" id="live-video"></div>
+				<p class="live-video-link"><a id="live-video-link" href="https://www.youtube.com/" target="_blank" rel="noopener">Watch on YouTube</a></p>
 			</div>
 
 			<!-- Scoring chart --------------------------------------------- -->
@@ -125,7 +131,27 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 					</div>
 				</div>
 				<div class="live-chart-wrap">
-					<canvas id="live-chart" height="260" aria-label="Running score by game clock"></canvas>
+					<div class="live-timeline" id="live-chart"></div>
+					<div class="live-tip" id="live-tip" role="status" hidden></div>
+				</div>
+			</div>
+
+			<!-- Penalties ------------------------------------------------- -->
+			<div class="live-section" id="live-pen-section" hidden>
+				<div class='splitter-con-container'>
+					<div class='splitter-txt-wrapper'>
+						<div class='container-con-block darkmode-block'>
+							<div class='container-con-wrapper'>
+								<div class='container-tx1-block darkmode-txt'>
+									<div class='container-emp-block'></div>
+									<h2>Penalties</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="live-chart-wrap">
+					<table class="live-log" id="live-pen-log"></table>
 				</div>
 			</div>
 
@@ -135,7 +161,6 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 </div>
 
 <script>window.RH_LIVE_BOOTSTRAP = <?= $bootstrap ?>;</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="<?= asset_v('/lib/js/live.js') ?>"></script>
 </body>
 </html>

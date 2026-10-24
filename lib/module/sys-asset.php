@@ -29,14 +29,16 @@ if (!function_exists('asset_v')) {
             return $v = substr($sha, 0, 8);
         }
 
-        // Local dev, or a deploy without git metadata: fall back to the mtime
-        // of a file that changes whenever the front end does.
-        $probe = __DIR__ . '/../css/main.css';
-        if (is_readable($probe)) {
-            $m = @filemtime($probe);
-            if ($m) {
-                return $v = (string) $m;
-            }
+        // Local dev, or a deploy without git metadata: fall back to the newest
+        // mtime among the stylesheets and scripts. Probing one file was not
+        // enough: main.css rarely changes, so edits to live.css or overlay.css
+        // kept the old URL and browsers (OBS included) kept the old file.
+        $newest = 0;
+        foreach (array_merge(glob(__DIR__ . '/../css/*.css') ?: [], glob(__DIR__ . '/../js/*.js') ?: []) as $f) {
+            $newest = max($newest, (int) @filemtime($f));
+        }
+        if ($newest) {
+            return $v = (string) $newest;
         }
 
         return $v = 'dev';
