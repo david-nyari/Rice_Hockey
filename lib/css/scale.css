@@ -759,8 +759,12 @@
 /* Responsive banner text for sponsors page */
 @media screen and (max-width: 800px) {
 	.banner-tx2-title p {
+		margin-top: 20px;
 		font-size: 14px;
 		line-height: 1.4;
+	}
+	.banner-btn-container {
+		margin-top: 16px;
 	}
 }
 
