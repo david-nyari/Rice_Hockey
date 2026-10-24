@@ -71,6 +71,7 @@ function h($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 				<div class="live-state">
 					<span class="live-pill" id="live-pill">&nbsp;</span>
 					<span class="live-period" id="live-period"></span>
+					<span class="live-start" id="live-start" hidden></span>
 					<span class="live-clock" id="live-clock"></span>
 					<span class="live-pp" id="live-pp" hidden></span>
 				</div>

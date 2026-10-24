@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $yt = $m[1];
             }
             $state['youtube'] = preg_match('~^[A-Za-z0-9_-]{11}$~', $yt) ? $yt : '';
+            $state['start_at'] = live_parse_start($_POST['start_at'] ?? '');
             $state['opponent_color'] = live_hex_color($_POST['opponent_color'] ?? '');
             $ok = live_save($state);
             $notice = $ok ? 'Saved.' : 'Could not reach the store.';
@@ -69,12 +70,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Saved anyway: it is their colour. Just say what to expect.
                 $error = live_color_warning($state['opponent_color']);
             }
+        } elseif ($action === 'clear') {
+            if (live_clear()) {
+                header('Location: /admin.php');
+                exit;
+            }
+            $error = 'Could not reach the store. The game was not cleared.';
         } elseif ($action === 'reset') {
             $fresh                  = live_default_state();
             $fresh['opponent']      = $state['opponent'];
             $fresh['opponent_logo'] = $state['opponent_logo'];
             $fresh['opponent_color'] = $state['opponent_color'];
             $fresh['youtube']       = $state['youtube'];
+            $fresh['start_at']      = $state['start_at'];
             live_save($fresh);
             header('Location: /admin.php');
             exit;
@@ -262,6 +270,9 @@ function mmss($sec) { return sprintf('%d:%02d', intdiv($sec, 60), $sec % 60); }
 			<input type="hidden" name="action" value="setup">
 			<label for="opp">Opponent</label>
 			<input id="opp" name="opponent" value="<?= h($state['opponent']) ?>">
+			<label for="start">Puck drop (Houston time)</label>
+			<input id="start" name="start_at" type="datetime-local"
+			       value="<?= h(live_start_input($state['start_at'])) ?>">
 			<label for="logo">Opponent logo path</label>
 			<input id="logo" name="opponent_logo" value="<?= h($state['opponent_logo']) ?>"
 			       placeholder="/img/uni_logos/uh_logo.webp">
@@ -278,6 +289,15 @@ function mmss($sec) { return sprintf('%d:%02d', intdiv($sec, 60), $sec % 60); }
 			<input type="hidden" name="action" value="reset">
 			<button type="submit" class="btn-danger">Reset game</button>
 		</form>
+		<form method="post" action="/admin.php"
+		      onsubmit="return confirm('Clear this game? The live page will show &quot;No game is on right now&quot; until the next game is set up.')">
+			<input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+			<input type="hidden" name="action" value="clear">
+			<button type="submit" class="btn-danger">Clear game</button>
+		</form>
+		<p class="admin-hint"><strong>Reset</strong> zeroes the score but keeps the
+		   opponent, start time and video. <strong>Clear</strong> removes the game
+		   entirely, for after the final.</p>
 		<p class="admin-hint">Public page: <a href="/live.php">/live.php</a><br>
 		   Stream overlay for OBS: <a href="/overlay.php">/overlay.php</a>
 		   (Browser Source, 1920&times;1080)</p>

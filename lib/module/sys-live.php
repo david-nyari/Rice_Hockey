@@ -21,6 +21,9 @@ const LIVE_COOKIE        = 'rh_admin';
 const LIVE_SESSION_TTL   = 43200; // 12 hours — one game day
 const LIVE_MAX_ATTEMPTS  = 10;
 const LIVE_LOCKOUT_TTL   = 900;   // 15 minutes
+// Game times are entered as rink time. Vercel runs in UTC, so the zone has to
+// be explicit or a 5:00 PM puck drop would be stored as 5:00 PM UTC.
+const LIVE_TIMEZONE      = 'America/Chicago';
 
 // Penalty length in minutes => label. A misconduct does not take a skater off
 // the ice, so it is shown but never counts toward strength.
@@ -51,6 +54,7 @@ function live_default_state()
         'paused_at'      => null,        // ms; set while the clock is stopped
         'events'         => [],
         'youtube'        => '',          // video id only, not a full URL
+        'start_at'       => null,        // ms; scheduled puck drop, if set
         'updated'        => live_now_ms(),
     ];
 }
@@ -68,6 +72,13 @@ function live_save(array $state)
 {
     $state['updated'] = live_now_ms();
     return kv_set_json(LIVE_KEY, $state);
+}
+
+/* Remove the game entirely: the live page and overlay fall back to "no game".
+ * DEL answers 0 for a key already gone, which is still success. */
+function live_clear()
+{
+    return kv_command(['DEL', LIVE_KEY]) !== null;
 }
 
 /*
@@ -353,8 +364,42 @@ function live_public(array $state)
         'events'        => $events,
         'penalties'     => $penalties,
         'youtube'       => $state['youtube'],
+        'start_at'      => $state['start_at'] === null ? null : (int) $state['start_at'],
+        'timezone'      => LIVE_TIMEZONE,
         'updated'       => (int) $state['updated'],
     ];
+}
+
+/* ----------------------------------------------------------- start time -- */
+
+/*
+ * A datetime-local value ('2026-11-07T17:00', rink time) -> ms, or null when
+ * blank or not a real date. The round trip rejects what createFromFormat
+ * would otherwise roll over, such as 2026-02-30 becoming March 2.
+ */
+function live_parse_start($s)
+{
+    if (!is_string($s) || $s === '') {
+        return null;
+    }
+    $s  = substr($s, 0, 16); // drop seconds if a browser sends them
+    $tz = new DateTimeZone(LIVE_TIMEZONE);
+    $d  = DateTime::createFromFormat('!Y-m-d\TH:i', $s, $tz);
+    if (!$d || $d->format('Y-m-d\TH:i') !== $s) {
+        return null;
+    }
+    return $d->getTimestamp() * 1000;
+}
+
+/* ms -> the datetime-local value that shows it again in rink time. */
+function live_start_input($ms)
+{
+    if ($ms === null) {
+        return '';
+    }
+    $d = new DateTime('@' . intdiv((int) $ms, 1000));
+    $d->setTimezone(new DateTimeZone(LIVE_TIMEZONE));
+    return $d->format('Y-m-d\TH:i');
 }
 
 /* --------------------------------------------------------------- colour -- */
